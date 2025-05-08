@@ -62,7 +62,7 @@ def go(args):
 
     # Create an artifact
     artifact = wandb.Artifact(
-        args.output_name,
+        args.output_artifact,
         type=args.output_type,
         description=args.output_description,
     )
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--output_artifact_name",
+        "--output_artifact",
         type=str,
-        help="Output Artifact Name",
+        help="Output Artifact",
         required=True
     )
 
