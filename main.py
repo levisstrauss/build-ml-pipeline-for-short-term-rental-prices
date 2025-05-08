@@ -24,7 +24,7 @@ _steps = [
 @hydra.main(config_name='config')
 def go(config: DictConfig):
 
-    # Setup the wandb experiment. All runs will be grouped under this name
+    # Set up the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
     os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
 
@@ -49,12 +49,28 @@ def go(config: DictConfig):
                     "artifact_description": "Raw file as downloaded"
                 },
             )
+            print("Finished running the first pipeline -> Downloading the data")
 
         if "basic_cleaning" in active_steps:
             ##################
             # Implement here #
             ##################
-            pass
+            # Download file and load in W&B
+            _ = mlflow.run(
+                os.path.join(hydra.utils.get_original_cwd(), "src", "basic_cleaning"),
+                "main",
+                version='main',
+                env_manager="conda",
+                parameters={
+                    "input_artifact": "sample.csv:latest",
+                    "output_name": "clean_sample.csv",
+                    "output_type": "clean_sample",
+                    "output_description": "Cleaned sample as downloaded",
+                    "min_price": config['etl']['min_price'],
+                    "max_price": config['etl']['max_price']
+                },
+            )
+            print("Finished running the second pipeline -> Cleaning the data")
 
         if "data_check" in active_steps:
             ##################
